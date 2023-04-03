@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>AJAX Test</title>
+		<script type="text/javascript">
+			//	Making use of Javascript's Fetch API
+
+			fetch('https://www.reddit.com/r/javascript/top/.json?limit=5')
+				.then( (result) => {
+					return result.json(); // Promise for parsed JSON.
+				})
+				.then( (retrieved) => {
+					let articles = retrieved.data.children;
+					for (let article of articles) {
+						console.log(article.data.title);
+					}
+				});
+
+			// fetch('https://dog.ceo/api/breeds/list/all')
+			// 	.then( (result) => {
+			// 	 console.log('HTTP Response Status: ' + result.status);
+			// 	});
+
+			fetch('https://dog.ceo/api/breeds/list/all')
+				.then( (result) => {
+					return resu
+					 // Promise for parsed JSON.
+				})
+				.then( (data) => {
+					// console.log(data);
+					// Executed when promised JSON is ready.
+					let breeds = Object.keys(data.message);
+					for (let breed of breeds) {
+						console.log(breed);
+					}
+				});
+		</script>
+	</head>
+	<body>
+		<button class="reload">Reload!</button>
+		<script type="text/javascript">
+			//	Callbacks; like anonymous functions
+			let button = document.querySelector('button.reload');
+
+			// button.addEventListener('click', function (event) {
+			// 	console.log(event.type +' event detected!');
+			// 	}
+			// );
+
+			// //	The same thing, but in a fancy arrow function 😱
+			button.addEventListener('click', (e) => {
+				console.log(e.type + ' event detected from an arrow function!');
+			});
+
+		</script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
