@@ -2,6 +2,11 @@
 require('connect.php');
 require('authenticate.php');
 
+$query = "SELECT * FROM content ORDER BY id ASC";
+$statement = $db->prepare($query);
+$statement->execute();
+$menuItems = $statement->fetchAll();
+
 if ($_POST) {
     $employee_name = filter_input(INPUT_POST, 'employee_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $service_history = filter_input(INPUT_POST, 'service_history', FILTER_SANITIZE_FULL_SPECIAL_CHARS); 
@@ -33,11 +38,9 @@ if ($_POST) {
     </header>
     <nav>
         <ul>
-            <li><a href="index.php">Home</a></li>
-            <li><a href="services.php">Equipment</a></li>
-            <li><a href="about.php">Invoices</a></li>
-            <li><a href="contact.php">Users</a></li>
-            <li><a href="contact.php">Work orders</a></li>
+            <?php foreach ($menuItems as $menuItem): ?>
+                <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
+            <?php endforeach; ?>
         </ul>
     </nav>
     <main>

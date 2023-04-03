@@ -7,6 +7,10 @@ ini_set('display_errors', 1);
 session_start();
 $msg = '';
 
+$query = "SELECT * FROM content ORDER BY id ASC";
+$statement = $db->prepare($query);
+$statement->execute();
+$menuItems = $statement->fetchAll();
 
 if (isset($_POST['input']) && strlen($_POST['input']) > 0) {
 
@@ -47,13 +51,10 @@ $rows = $statement->fetchAll();
         <h1>Winnipeg Telecom</h1>
     </header>
     <nav>
-        <ul>
-            <li><a href="index.php">Home</a></li>
-            <li><a href="services.php">Equipment</a></li>
-            <li><a href="about.php">Invoices</a></li>
-            <li><a href="contact.php">Users</a></li>
-            <li><a href="contact.php">Work orders</a></li>
-            <li><a href="addEmployees.php">Add Team Member</a></li>
+    <ul>
+            <?php foreach ($menuItems as $menuItem): ?>
+                <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
+            <?php endforeach; ?>
         </ul>
     </nav>
     <main>

@@ -24,9 +24,7 @@ if($_POST) {
 
     if (empty($quantity)) {
         $errors[] = "Quantity is required";
-    } else if (!is_numeric($quantity)) {
-        $errors[] = "Quantity must be a number";
-    }
+    } 
 
     if (empty($name)) {
         $errors[] = "Name is required";
@@ -37,57 +35,47 @@ if($_POST) {
         $statement = $db->prepare($query);
         $statement->bindValue(":name", $name);
         $statement->bindValue(":quantity", $quantity, PDO::PARAM_INT);
-        if ($statement->execute()) {
-            echo "<p>File uploaded successfully at: $new_image_path</p>";
-            header("Location: equipment.php");
-            exit;
-        } else {
-            echo "Error";
-        }
+
+        $statement->execute();
+    
+        header("Location: equipment.php"); 
     }
 }
 
 
-
 function file_upload_path($original_filename, $upload_subfolder_name = 'uploads') {
-    $current_folder = getcwd(); 
+    $current_folder = dirname(__FILE__);
     $path_segments = [$current_folder, $upload_subfolder_name, basename($original_filename)];
-    return join(DIRECTORY_SEPARATOR, $path_segments);
+    $full_path = join(DIRECTORY_SEPARATOR, $path_segments);
+    error_log("Full path: " . $full_path);
+    return $full_path;
+ }
+
+ $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0) && !empty($_FILES['image']['name']);
+
+ if ($image_upload_detected) {
+    $image_filename       = $_FILES['image']['name'];
+    $temporary_image_path = $_FILES['image']['tmp_name'];
+    $new_image_path       = file_upload_path($_POST['name'] . '.jpg');
+
+    error_log("Temporary path: " . $temporary_image_path);
+    error_log("New path: " . $new_image_path);
+
+    
+
+         move_uploaded_file($temporary_image_path, $new_image_path);
+
+         $query = "UPDATE Equipment SET image = 1 WHERE name = :name";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":name", $name);
+        $statement->execute();
+   
 }
 
+ elseif (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE) {
 
-function file_is_an_image($temporary_path, $new_path) {
-    $allowed_mime_types = ['image/gif', 'image/jpeg', 'image/png', 'application/pdf'];
-    $allowed_file_extensions = ['gif', 'jpg', 'jpeg', 'png', 'pdf'];
-
-    $actual_file_extension = pathinfo($new_path, PATHINFO_EXTENSION);
-    $actual_mime_type = getimagesize($temporary_path)['mime'];
-
-    $file_extension_is_valid = in_array($actual_file_extension, $allowed_file_extensions);
-    $mime_type_is_valid = in_array($actual_mime_type, $allowed_mime_types);
-
-    return $file_extension_is_valid && $mime_type_is_valid;       
 }
 
-$image_upload_detected = isset($_FILES['uploaded_file']) && ($_FILES['uploaded_file']['error'] === 0);
-$upload_error_detected = isset($_FILES['uploaded_file']) && ($_FILES['uploaded_file']['error'] > 0);
-
-
-if ($image_upload_detected) { 
-    $filename  = $_FILES['uploaded_file']['name'];
-    $temporary_image_path  = $_FILES['uploaded_file']['tmp_name'];
-    $new_image_path    = file_upload_path($filename, 'uploads');
-    $actual_file_extension = pathinfo($new_image_path, PATHINFO_EXTENSION);
-
-    if (file_is_an_image($temporary_image_path, $new_image_path)) {
-
-        if (move_uploaded_file($temporary_image_path, $new_image_path)) {
-            echo "<p>File uploaded successfully at: $new_image_path</p>";
-        } else {
-            echo "<p>Error uploading file.</p>";
-        }
-    }      
-} 
 
 ?>
 
@@ -97,7 +85,7 @@ if ($image_upload_detected) {
 	<title>Equipment List</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
-
+<body>
 <header>
     <h1>Winnipeg Telecom</h1>
 </header>
@@ -109,9 +97,9 @@ if ($image_upload_detected) {
     </ul>
 </nav>
 
-<body>
 
     <h2>Add Equipment</h2>
+
 
     <?php if (!empty($errors)): ?>
             <ul>
@@ -120,16 +108,6 @@ if ($image_upload_detected) {
                 <?php endforeach; ?>
             </ul>
     <?php endif; ?>
-
-    <?php if ($upload_error_detected): ?>
-        <p>Error Number: <?= $_FILES['uploaded_file']['error'] ?></p>
-    <?php elseif ($image_upload_detected): ?>
-        <p>Client-Side Filename: <?= $_FILES['uploaded_file']['name'] ?></p>
-        <p>Apparent Mime Type:   <?= $_FILES['uploaded_file']['type'] ?></p>
-        <p>Size in Bytes:        <?= $_FILES['uploaded_file']['size'] ?></p>
-        <p>Temporary Path:       <?= $_FILES['uploaded_file']['tmp_name'] ?></p>
-        <p>New path:              <?=$new_image_path?></p>
-    <?php endif ?>
 
     <form method="post"  enctype="multipart/form-data">
 
@@ -140,12 +118,26 @@ if ($image_upload_detected) {
         <input type="number" id="quantity" name="quantity"><br>
 
         <label for="image">Image:</label>
-        <input type="file" name="uploaded_file" id="uploaded_file"><br> 
+        <input type="file" name="image" id="image"><br> 
 
         <input type="submit" name="submit" value="Add Equipment">
 
         
     </form>
+
+    <?php if (isset($_FILES['image']) && $_FILES['image']['error'] > 0): ?>
+
+    <p>Error Number: <?= $_FILES['image']['error'] ?></p>
+
+    <?php elseif (isset($_FILES['image'])): ?>
+
+    <p>Client-Side Filename: <?= $_FILES['image']['name'] ?></p>
+    <p>Apparent Mime Type:   <?= $_FILES['image']['type'] ?></p>
+    <p>Size in Bytes:        <?= $_FILES['image']['size'] ?></p>
+    <p>Temporary Path:       <?= $_FILES['image']['tmp_name'] ?></p>
+    <p>Current location:      <?=$new_image_path ?></p>
+
+    <?php endif ?>
     <h1>Equipment List</h1>
     <table class="equipment-table">
         <thead>
@@ -157,14 +149,18 @@ if ($image_upload_detected) {
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($rows as $row): ?>
-                <tr>
-                    <td><?= $row['item_ID'] ?></td>
-                    <td><?= $row['quantity'] ?></td>
-                    <td><?= $row['name'] ?></td>
+        <?php foreach ($rows as $row): ?>
+            <tr>
+                <td><?= $row['item_ID'] ?></td>
+                <td><?= $row['quantity'] ?></td>
+                <td><?= $row['name'] ?></td>
+                <?php if (file_exists('uploads/' . $row['name'] . '.jpg')): ?>
                     <td><img src="uploads/<?= $row['name'] ?>.jpg" alt="<?= $row['name'] ?>"></td>
-                </tr>
-            <?php endforeach; ?>
+                <?php else: ?>
+                    <td>No image available</td>
+                <?php endif; ?>
+            </tr>
+         <?php endforeach; ?>
         </tbody>
     </table>
 </body>

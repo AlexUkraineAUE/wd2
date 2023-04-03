@@ -20,6 +20,7 @@ if(isset($_GET['id'])) {
 
     $rows = $statement->fetchAll();
 }
+
 ?>
 
 <!DOCTYPE html>
