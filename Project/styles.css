@@ -1,0 +1,60 @@
+body {
+	margin: 0;
+	padding: 0;
+	font-family: Arial, sans-serif;
+}
+
+header {
+	background-color: #0070C0;
+	color: white;
+	padding: 20px;
+}
+
+nav {
+	background-color: #E0E0E0;
+	padding: 10px;
+}
+
+nav ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+nav ul li {
+	display: inline-block;
+	margin-right: 20px;
+}
+
+nav ul li a {
+	color: #0070C0;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+nav ul li a:hover {
+	color: white;
+	background-color: #0070C0;
+	padding: 10px;
+}
+
+main {
+	padding: 20px;
+}
+
+footer {
+	background-color: #0070C0;
+	color: white;
+	text-align: center;
+	padding: 10px;
+}
+
+.customer-list {
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.equipment-table img {
+	width: 100px;
+	height: auto;
+  }

@@ -15,6 +15,7 @@
     
     // Fetch the row selected by primary key id.
     $row = $statement->fetch();
+    
 ?>
 <!DOCTYPE html>
 <html>
