@@ -2,67 +2,68 @@
 require('connect.php');
 session_start();
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+if(isset($_POST['username']) && isset($_POST['password'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-$query = "SELECT * FROM content ORDER BY id ASC";
-$statement = $db->prepare($query);
-$statement->execute();
-$menuItems = $statement->fetchAll();
+    $query = "SELECT * FROM login WHERE username = :username AND password = :password";
+    $statement = $db->prepare($query);
+    $statement->bindValue(":username", $username);
+    $statement->bindValue(":password", $password);
+    $statement->execute();
 
+    $user = $statement->fetch();
 
-$username = "";
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  
-  $stmt = $db->prepare("SELECT * FROM login WHERE username = :username");
-  $stmt->bindParam(':username', $username);
-  $stmt->execute();
-  $user = $stmt->fetchAll();
-  
-  if ($user && password_verify($password, $user[0]['password'])) {
-      $_SESSION['username'] = $user[0]['username'];
-      header("location: index.php");
-  } else {
-      $error = "Your Login Name or Password is invalid";
-  }
-}
+        if($user) {
+            
+            $_SESSION['user'] = $user; 
+            header("Location: index.php");
+            exit();
+        } 
+        header("Location: index.php");
+        exit();
+    } else {
+        // login failed, show error message
+        $error = "Invalid username or password";
+    }
+
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" type="text/css" href="styles_login.css">
+    <title>Login - Winnipeg Telecom</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
-<nav>
-    <ul>
-        <?php foreach ($menuItems as $menuItem): ?>
-            <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
-        <?php endforeach; ?>
-    </ul>
-</nav>
 <body>
-    <div class="wrapper">
+    <header>
+        <h1>Winnipeg Telecom</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="about.php">About Us</a></li>
+            <li><a href="services.php">Services</a></li>
+            <li><a href="contact.php">Contact Us</a></li>
+        </ul>
+    </nav>
+    <main>
         <h2>Login</h2>
-        <p>Please fill in your credentials to login.</p>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <div>
-                <label>Username</label>
-                <input type="text" name="username" class="form-control" value="<?php echo $username; ?>">
-                
-            </div>    
-            <div>
-                <label>Password</label>
-                <input type="password" name="password" class="form-control">
-                
-            </div>
-            <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Login">
-            </div>
+        <?php if(isset($error)): ?>
+            <p class="error"><?= $error ?></p>
+        <?php endif; ?>
+        <form method="post" action="login.php">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username">
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password">
+            <br>
+            <input type="submit" value="Login">
         </form>
-    </div>    
+    </main>
+    <footer>
+        <p>&copy; 2023 Winnipeg Telecom. All rights are sold separately.</p>
+    </footer>
 </body>
 </html>
