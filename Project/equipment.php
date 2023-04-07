@@ -22,8 +22,7 @@ $statement->execute();
 
 $rows = $statement->fetchAll();
 
-// file_upload_path() - Safely build a path String that uses slashes appropriate for our OS.
-// Default upload path is an 'uploads' sub-folder in the current folder.
+
 function file_upload_path($original_filename, $upload_subfolder_name = 'uploads') {
     
     // Get the current directory
@@ -135,10 +134,15 @@ if ($_POST) {
             }
         }
 
+        
+
         $statement->execute();
         header("Location: equipment.php");
         exit;   
     }
+
+
+    
 }
 
 
@@ -177,8 +181,7 @@ if ($_POST) {
         <input type="file" name="image" id="image"><br> 
 
         <input type="submit" name="submit" value="Add Equipment">
-
-        
+       
     </form>
 
     <?php if (isset($_FILES['image']) && $_FILES['image']['error'] > 0): ?>
@@ -213,17 +216,23 @@ if ($_POST) {
         </thead>
         <tbody>
         <?php foreach ($rows as $row): ?>
-            <tr>
+	        <tr>
                 <td><?= $row['id'] ?></td>
-                <td><?= $row['quantity'] ?></td>
                 <td><?= $row['name'] ?></td>
-                <?php if ($row['img_name']): ?>
-                <td><img src="<?= 'uploads/' . $row['img_name'] ?>" alt="Equipment Image"></td>
-            <?php else: ?>
-               <td> No Image Available</td>
-            <?php endif; ?>
-        </tr>
-         <?php endforeach; ?>
+                <td><?= $row['quantity'] ?></td>
+                <td>
+                    <?php if (!empty($row['img_name'])): ?>
+                        <img src="uploads/<?= $row['img_name'] ?>" alt="<?= $row['name'] ?>">
+                        <form method="POST" action="delete_image.php">
+                            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                            <button onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
+                        </form>
+                    <?php else: ?>
+                        <p>No image available</p>
+                    <?php endif ?>
+		        </td>
+	        </tr>
+        <?php endforeach ?>
         </tbody>
     </table>
 </body>
