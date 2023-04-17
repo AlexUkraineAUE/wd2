@@ -7,6 +7,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require('connect.php');
+session_start();
 
 $query = "SELECT * FROM content ORDER BY id ASC";
 $statement = $db->prepare($query);
@@ -152,18 +153,35 @@ if ($_POST) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Equipment List</title>
+    <title>Winnipeg Telecom</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-<header>
-    <h1>Winnipeg Telecom</h1>
-</header>
-<nav>
-    <ul>
+    <header>
+        <h1>Winnipeg Telecom</h1>
+    </header>
+    <nav>
+        <ul>
+            <?php foreach ($menuItems as $menuItem): ?>
+            <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
+            <?php endforeach; ?>
 
-</nav>
-
+            <?php if (isset($_SESSION['user'])):
+                $user = $_SESSION['user'];
+                $loggedInMessage = "You are logged in as " . $user['username'];
+            ?>
+                <li><?= $loggedInMessage ?></li>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li>
+                    <form method="post" action="login.php">
+                        <input type="submit" value="Login">
+                    </form>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+    <main>
 
     <h2>Add Equipment</h2>
 

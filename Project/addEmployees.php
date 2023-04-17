@@ -1,6 +1,7 @@
 <?php
 require('connect.php');
 require('authenticate.php');
+session_start();
 
 $query = "SELECT * FROM content ORDER BY id ASC";
 $statement = $db->prepare($query);
@@ -39,8 +40,22 @@ if ($_POST) {
     <nav>
         <ul>
             <?php foreach ($menuItems as $menuItem): ?>
-                <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
+            <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
             <?php endforeach; ?>
+
+            <?php if (isset($_SESSION['user'])):
+                $user = $_SESSION['user'];
+                $loggedInMessage = "You are logged in as " . $user['username'];
+            ?>
+                <li><?= $loggedInMessage ?></li>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li>
+                    <form method="post" action="login.php">
+                        <input type="submit" value="Login">
+                    </form>
+                </li>
+            <?php endif; ?>
         </ul>
     </nav>
     <main>

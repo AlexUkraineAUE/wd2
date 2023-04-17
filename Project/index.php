@@ -1,5 +1,11 @@
 <?php
 require('connect.php');
+session_start();
+
+// if(isset($_SESSION['user'])) {
+//     $user = $_SESSION['user'];
+//     $loggedInMessage = "You are logged in as " . $user['username'];
+// }
 
 $query = "SELECT * FROM content ORDER BY id ASC";
 $statement = $db->prepare($query);
@@ -34,21 +40,25 @@ if(isset($_GET['id'])) {
         <h1>Winnipeg Telecom</h1>
     </header>
     <nav>
-        <ul>
-            <?php foreach ($menuItems as $menuItem): ?>
-                <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
-            <?php endforeach; ?>
-            <li><form method="post" action="login.php">
-            <label for="username">Username:</label>
-            <input type="text" name="username" id="username">
-            <br>
-            <label for="password">Password:</label>
-            <input type="password" name="password" id="password">
-            <br>
+    <ul>
+    <?php foreach ($menuItems as $menuItem): ?>
+    <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
+<?php endforeach; ?>
+
+<?php if (isset($_SESSION['user'])):
+    $user = $_SESSION['user'];
+    $loggedInMessage = "You are logged in as " . $user['username'];
+?>
+    <li><?= $loggedInMessage ?></li>
+    <li><a href="logout.php">Logout</a></li>
+<?php else: ?>
+    <li>
+        <form method="post" action="login.php">
             <input type="submit" value="Login">
-            </form>
-            </li>
-        </ul>
+        </form>
+    </li>
+<?php endif; ?>
+    </ul>
     </nav>
     <main>
         <h2>Welcome to Winnipeg Telecom</h2>

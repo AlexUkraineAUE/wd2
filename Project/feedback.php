@@ -1,5 +1,6 @@
 <?php
 require('connect.php');
+session_start();
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -43,7 +44,7 @@ $rows = $statement->fetchAll();
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Winnipeg Telecom - Feedback</title>
+    <title>Winnipeg Telecom</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
@@ -51,10 +52,24 @@ $rows = $statement->fetchAll();
         <h1>Winnipeg Telecom</h1>
     </header>
     <nav>
-    <ul>
+        <ul>
             <?php foreach ($menuItems as $menuItem): ?>
-                <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
+            <li><a href="<?=$menuItem['url']?>"><?=$menuItem['title']?></a></li>
             <?php endforeach; ?>
+
+            <?php if (isset($_SESSION['user'])):
+                $user = $_SESSION['user'];
+                $loggedInMessage = "You are logged in as " . $user['username'];
+            ?>
+                <li><?= $loggedInMessage ?></li>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li>
+                    <form method="post" action="login.php">
+                        <input type="submit" value="Login">
+                    </form>
+                </li>
+            <?php endif; ?>
         </ul>
     </nav>
     <main>
