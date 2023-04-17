@@ -2,13 +2,13 @@
 require('connect.php');
 session_start();
 
-if(!empty($_POST['name']) && !empty($_POST['password'])) {
-    $name = $_POST['name'];
+if(!empty($_POST['email']) && !empty($_POST['password'])) {
+    $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $query = "SELECT * FROM Users WHERE name = :name";
+    $query = "SELECT * FROM Users WHERE email = :email";
     $statement = $db->prepare($query);
-    $statement->bindValue(":name", $name);
+    $statement->bindValue(":email", $email);
     $statement->execute();
 
     $user = $statement->fetch();
@@ -18,7 +18,7 @@ if(!empty($_POST['name']) && !empty($_POST['password'])) {
         header("Location: index.php");
         exit();
     } else {
-        $error = "Invalid username or password";
+        $error = "Invalid email or password";
     }
 }
 
@@ -49,8 +49,8 @@ if(!empty($_POST['name']) && !empty($_POST['password'])) {
             <p class="error"><?= $error ?></p>
         <?php endif; ?>
         <form method="post" action="login.php">
-            <label for="username">Name:</label>
-            <input type="text" name="name" id="name">
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email">
             <br>
             <label for="password">Password:</label>
             <input type="password" name="password" id="password">

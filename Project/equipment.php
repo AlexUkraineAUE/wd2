@@ -168,7 +168,7 @@ if ($_POST) {
 
             <?php if (isset($_SESSION['user'])):
                 $user = $_SESSION['user'];
-                $loggedInMessage = "You are logged in as " . $user['username'];
+                $loggedInMessage = "You are logged in as " . $user['name'];
             ?>
                 <li><?= $loggedInMessage ?></li>
                 <li><a href="logout.php">Logout</a></li>

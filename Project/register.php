@@ -5,7 +5,7 @@ session_start();
 
 $errorMsg = '';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_POST) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
             // Save the user to the database
-            $query = "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)";
+            $query = "INSERT INTO Users (name, email, password) VALUES (:name, :email, :password)";
             $statement = $db->prepare($query);
             $statement->bindValue(":name", $name);
             $statement->bindValue(":email", $email);
@@ -85,9 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="confirm_password">Confirm Password:</label>
             <input type="password" id="confirm_password" name="confirm_password"><br>
     
-                <?php if (!empty($errorMsg)) { ?>
-                    <p class="error"><?php echo $errorMsg; ?></p>
-                <?php } ?>
+            <?php if (!empty($errorMsg)) { ?>
+                <p class="error"><?= $errorMsg; ?></p>
+            <?php } ?>
     
                 <input type="submit" value="Submit">
             </form>

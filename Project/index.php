@@ -47,7 +47,7 @@ if(isset($_GET['id'])) {
 
 <?php if (isset($_SESSION['user'])):
     $user = $_SESSION['user'];
-    $loggedInMessage = "You are logged in as " . $user['username'];
+    $loggedInMessage = "You are logged in as " . $user['name'];
 ?>
     <li><?= $loggedInMessage ?></li>
     <li><a href="logout.php">Logout</a></li>
@@ -55,6 +55,11 @@ if(isset($_GET['id'])) {
     <li>
         <form method="post" action="login.php">
             <input type="submit" value="Login">
+        </form>
+    </li>
+    <li>
+        <form method="post" action="register.php">
+            <input type="submit" value="Register">
         </form>
     </li>
 <?php endif; ?>
