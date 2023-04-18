@@ -23,6 +23,7 @@ if(!empty($_POST['email']) && !empty($_POST['password'])) {
 }
 
 // add test
+// Only admins can perform admin page CUD tasks.
 
 ?>
 
