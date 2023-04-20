@@ -5,7 +5,6 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-session_start();
 $msg = '';
 
 $query = "SELECT * FROM content ORDER BY id ASC";
@@ -40,7 +39,7 @@ $statement = $db->prepare($query);
 $statement->execute();
 $rows = $statement->fetchAll();
 ?>
-?>
+
 
 <!DOCTYPE html>
 <html>
