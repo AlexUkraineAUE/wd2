@@ -17,9 +17,9 @@ if (isset($_POST['input']) && strlen($_POST['input']) > 0) {
 
 
     if ($_POST['input'] == $_SESSION['captcha']) {
-        $yourName = $_POST['your_name'];
-        $employeeName = $_POST['employee_name'];
-        $comment = $_POST['comment'];
+        $yourName = filter_input(INPUT_POST, 'your_name', FILTER_SANITIZE_STRING);
+        $employeeName = filter_input(INPUT_POST, 'employee_name', FILTER_SANITIZE_STRING);
+        $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
 
         $query = "INSERT INTO Feedback (your_name, employee_name, comment) VALUES (:yourName, :employeeName, :comment)";
         $statement = $db->prepare($query);
@@ -39,6 +39,7 @@ $query = "SELECT * FROM Feedback WHERE visible = 1 ORDER BY id DESC";
 $statement = $db->prepare($query);
 $statement->execute();
 $rows = $statement->fetchAll();
+?>
 ?>
 
 <!DOCTYPE html>
