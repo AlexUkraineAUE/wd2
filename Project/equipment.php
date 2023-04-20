@@ -55,9 +55,8 @@ function file_is_an_image($temporary_path, $new_path) {
 
 $errors = [];
 if ($_POST) {
-    
-    $quantity = $_POST['quantity'];
-    $name = $_POST['name'];
+    $quantity = filter_input(INPUT_POST, 'quantity', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
     if (empty($quantity)) {
         $errors[] = "Quantity is required";
